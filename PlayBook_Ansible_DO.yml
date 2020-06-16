@@ -1,0 +1,22 @@
+---
+- name: Send DO 
+  hosts: localhost 
+  connection: local
+
+  tasks:
+   - name: Send DO Declaration to BIGIP 
+     template:
+       src: "DO_Template.j2"
+       dest: "DO_{{ host }}.json"
+   - name: Send declaration
+     uri:
+        url: "https://{{ bigip }}/mgmt/shared/declarative-onboarding"
+        method: POST
+        user: "{{ user }}"
+        password: "{{ password }}"
+        body: "{{ lookup('file','DO_{{ host }}.json') }}"
+        status_code: 202
+        timeout: 300
+        body_format: json
+        validate_certs: no
+

@@ -1,0 +1,22 @@
+---
+- name: Deploy AS3
+  hosts: localhost
+  connection: local
+
+  tasks:
+   - name: Instantiate AS3 Template
+     template:
+       src: "AS3_Template.j2"
+       dest: "{{ Tenant_Name }}_{{ App_Name }}.json"
+   - name: Send declaration
+     uri:
+        url: "https://{{ bigip }}/mgmt/shared/appsvcs/declare"
+        method: POST
+        user: "{{ user }}"
+        password: "{{ password }}"
+        body: "{{ lookup('file','{{ Tenant_Name }}_{{ App_Name }}.json') }}"
+        status_code: 200
+        timeout: 300
+        body_format: json
+        validate_certs: no
+

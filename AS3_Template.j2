@@ -1,0 +1,48 @@
+{
+   "class":"ADC",
+   "schemaVersion":"3.5.0",
+   "id": "5489432",
+   "{{Tenant_Name}}":{
+      "class":"Tenant",
+      "{{App_Name}}":{
+         "class":"Application",
+         "template":"generic",
+         "{{App_Name}}_vs":{
+            "remark":"{{App_Name}}.demo.com",
+            "class":"Service_HTTP",
+            "virtualAddresses":[
+               "{{VIP}}"
+            ],
+            "virtualPort":80,
+            "snat":"auto",
+            "policyWAF":{
+               "use":"{{App_Name}}_waf"
+            },
+            "pool":"{{App_Name}}_pool"
+         },
+         "{{App_Name}}_pool":{
+            "class":"Pool",
+            "monitors":[
+               "http"
+            ],
+            "members":[
+               {
+                  "servicePort":80,
+                  "addressDiscovery":"aws",
+                  "updateInterval":1,
+                  "tagKey":"PoolMemberOf",
+                  "tagValue":"F5",
+                  "addressRealm":"private",
+                  "region":"{{Region}}"
+               }
+            ]
+         },
+         "{{App_Name}}_waf":{
+            "class":"WAF_Policy",
+            "url":"https://raw.githubusercontent.com/f5devcentral/f5-asm-policy-templates/master/generic_ready_template/Rapid_Depolyment_Policy_13_1.xml",
+            "ignoreChanges":false
+         }
+      }
+   }
+}
+
